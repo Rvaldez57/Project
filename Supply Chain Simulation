@@ -1,0 +1,49 @@
+import random
+import pandas as pd
+import numpy as np
+
+# Define the entities in the supply chain
+suppliers = ['Supplier A', 'Supplier B', 'Supplier C']
+warehouses = ['Warehouse 1', 'Warehouse 2']
+customers = ['Customer 1', 'Customer 2', 'Customer 3']
+
+# Generate random supply chain data
+def generate_data(num_days):
+    data = []
+    for day in range(num_days):
+        for supplier in suppliers:
+            for warehouse in warehouses:
+                for customer in customers:
+                    quantity = random.randint(1, 100)
+                    data.append([day, supplier, warehouse, customer, quantity])
+    return pd.DataFrame(data, columns=['Day', 'Supplier', 'Warehouse', 'Customer', 'Quantity'])
+
+# Simulate 30 days of supply chain activity
+supply_chain_data = generate_data(30)
+
+# Display the first few rows of the data
+print(supply_chain_data.head())
+
+# Analyze the data
+# Total quantity supplied by each supplier
+total_supplied = supply_chain_data.groupby('Supplier')['Quantity'].sum()
+print("\nTotal quantity supplied by each supplier:\n", total_supplied)
+
+# Total quantity received by each customer
+total_received = supply_chain_data.groupby('Customer')['Quantity'].sum()
+print("\nTotal quantity received by each customer:\n", total_received)
+
+# Visualize the data
+import matplotlib.pyplot as plt
+
+# Plot total quantity supplied by each supplier
+total_supplied.plot(kind='bar', title='Total Quantity Supplied by Each Supplier')
+plt.xlabel('Supplier')
+plt.ylabel('Total Quantity')
+plt.show()
+
+# Plot total quantity received by each customer
+total_received.plot(kind='bar', title='Total Quantity Received by Each Customer', color='orange')
+plt.xlabel('Customer')
+plt.ylabel('Total Quantity')
+plt.show()
