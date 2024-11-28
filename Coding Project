@@ -1,0 +1,428 @@
+
+10/28/24 Ticker Symbols of commodity clusters _
+
+Why Do These Finance and Technology Ticker Symbols Show Covariant Behavior? bold text The finance and technology companies represented by the chosen ticker symbols—such as Tesla (TSLA), Nvidia (NVDA), PayPal (PYPL), and Intuit (INTU)—often display covariant behavior due to several intersecting factors. One major reason is that these companies operate in high-growth sectors influenced by global economic cycles, investor sentiment, and technological trends. When economic conditions shift, or new technologies emerge, these industries often react similarly because they share exposure to common risk factors like interest rates, inflation, and regulatory developments.
+
+Furthermore, many of these companies are highly integrated into the digital economy, which means that advancements or setbacks in one segment—such as cloud computing, artificial intelligence, or financial technology—can have ripple effects across the sector. For instance, rising interest rates might impact the borrowing costs for technology companies, which in turn affects their stock performance in ways that can resemble patterns seen in financial firms dependent on tech for processing, security, and data management.
+
+By examining these companies as a covariant cluster, analysts can better understand how economic or industry-specific changes impact their shared market behavior, providing insights into the interdependencies within finance and technology.
+
+Locating Novel Digital Commodities Within a Cluster-Driven Model for Global Commodities
+
+With massive, recent interest in institutional investment in digital commodities, ie cryptocurrencies, US and other regulatory commissions effectively classify such assets as commodities. Given that these risk assets are typically priced in tandem with stock equity, and contrasted against US Treasury instruments, little scholarship has analyzed cryptocurrencies and digital assets as effective commodities, such as Sugar, Timber, Oil products or Grains.
+
+Seeing Bitcoin as a necessary commodity to participate in cross border money exchange, ecommerce, or oil purchasing is necessary to justify considering it as a commodity, rather than a risk asset. For those who analye cryptocurrency as a holding, and analyze it via other valuation methods typically finds the exercise wanting, as valuation tends to look for underlying, fundamental value. The use case, also for Bitcoin and other digital commodities also leaves the analyst to wonder whether they are investing in Ponzi goods; Bitcoin is used to purchase hotel rooms, and at times, yachts or pizza slices, but it remains a held-good such as Gold.
+
+Why Cluster Commodities, to Study Bitcoin (or Hogs)?
+
+When digial commodities are analyzed alongside Oats, Gold, E-Mini Futures and other classical commodities, their prices covariance, against a pool of commodities can be tracked. Unifying digital commodities within pools of other commonly traded daily commodities allows another category of analysis to emerge, where traders simply shift from one commodity to another, as economic winds change, or opportunities simply justify a change of trading venue, ie a trend-shift toward energy away from equity, and we have seen since the start of a hot war in Ukraine.
+
+Using Cluster Matrices to Study Covariant, Affine Price Behaviors between Bitcoin and Other Commodity Flows
+
+This study samples the recent price behavior of 37 commodities, then traces the covariant, linear behavior, matrix style. Affine, or common mover groups are established, and presented interactively, for the viewer in a visual milieu.
+
+Discussion of data pipeline used, and the subsequent data transformations needed in order to create this affine matrix, as well as the technical tools to facilitate this.
+
+Overview of Data Science Techniques
+
+The pipeline includes downloading data, introducing processing efficiencies, model building and cross validation, and cluster expression. I outline my steps as I take them, to arrive at a matrix of pricing which affords the following advantages.
+
+The experiement was adapted from scikit-learn's own documentation, where the techniques were applied to the US stock market. My rendition creates several departures while adapting the advantage of Varoquaux's pipeline.[1]
+
+    The data ingest is fast, efficient, updateable and portable. Anyone may use this code to build a working model of US-traded commodities, and add symbols they wish to see, where I have missed them.
+    Data represent public, recently settled trades.
+    Local CPU resources are used in order to use notebook memory efficiently, and leverage local Linux resources.
+    Data remains in perpetuity for the analyst, or it may be rebuilt, using updated, daily trade series.
+    Data is built as a time series, in the OHLC format, where Opening, Closing, High and daily Low prices are located.
+    Clustering is aimed toward predictive use, where clusters can achieve whatever size is needed, to cluster affine, covariant items
+    Every commodity under consideration is measured for covariance against each other, to locate a product that trades in the same linear way
+    Sparse Inverse Covariance is the technique used to identify relationships between every item in the Matrix, and thus explose clusters of products, trading similarly. This is a list of connected items, trading conditionally upon the others.Thus the list is a useable, probable list of items which trade in the same way, over a week of US business.
+    An edge model exposes the borders for classification, and locates clusters at its discretion. Thus, no supervised limits are imposed in cluster formation.
+    Hyperparameters are determined via search with a predetermined number of folds, where each subset is used to locate model parameters, which are averaged at the close of the run.
+    Given the large volume of colinear features, a cross validation technique is used to 'lasso' model features.
+
+Building the Data Science Environment for Linux and Python
+
+Use the following commands to interface with your underlying linux environment. These may not need to be commented out, but will remain necessary each time a new kernel boot, in your notebook, takes place.
+
+Double-click (or enter) to edit
+
+What motivated me to research these companies is because these all relate to finance and technology which are emerging fields that are my passions.
+
+!pip install yfinance
+!pip install vega_datasets
+
+Requirement already satisfied: yfinance in /usr/local/lib/python3.10/dist-packages (0.2.48)
+Requirement already satisfied: pandas>=1.3.0 in /usr/local/lib/python3.10/dist-packages (from yfinance) (2.2.2)
+Requirement already satisfied: numpy>=1.16.5 in /usr/local/lib/python3.10/dist-packages (from yfinance) (1.26.4)
+Requirement already satisfied: requests>=2.31 in /usr/local/lib/python3.10/dist-packages (from yfinance) (2.32.3)
+Requirement already satisfied: multitasking>=0.0.7 in /usr/local/lib/python3.10/dist-packages (from yfinance) (0.0.11)
+Requirement already satisfied: lxml>=4.9.1 in /usr/local/lib/python3.10/dist-packages (from yfinance) (5.3.0)
+Requirement already satisfied: platformdirs>=2.0.0 in /usr/local/lib/python3.10/dist-packages (from yfinance) (4.3.6)
+Requirement already satisfied: pytz>=2022.5 in /usr/local/lib/python3.10/dist-packages (from yfinance) (2024.2)
+Requirement already satisfied: frozendict>=2.3.4 in /usr/local/lib/python3.10/dist-packages (from yfinance) (2.4.6)
+Requirement already satisfied: peewee>=3.16.2 in /usr/local/lib/python3.10/dist-packages (from yfinance) (3.17.7)
+Requirement already satisfied: beautifulsoup4>=4.11.1 in /usr/local/lib/python3.10/dist-packages (from yfinance) (4.12.3)
+Requirement already satisfied: html5lib>=1.1 in /usr/local/lib/python3.10/dist-packages (from yfinance) (1.1)
+Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.10/dist-packages (from beautifulsoup4>=4.11.1->yfinance) (2.6)
+Requirement already satisfied: six>=1.9 in /usr/local/lib/python3.10/dist-packages (from html5lib>=1.1->yfinance) (1.16.0)
+Requirement already satisfied: webencodings in /usr/local/lib/python3.10/dist-packages (from html5lib>=1.1->yfinance) (0.5.1)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas>=1.3.0->yfinance) (2.8.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas>=1.3.0->yfinance) (2024.2)
+Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests>=2.31->yfinance) (3.4.0)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests>=2.31->yfinance) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests>=2.31->yfinance) (2.2.3)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests>=2.31->yfinance) (2024.8.30)
+Requirement already satisfied: vega_datasets in /usr/local/lib/python3.10/dist-packages (0.9.0)
+Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages (from vega_datasets) (2.2.2)
+Requirement already satisfied: numpy>=1.22.4 in /usr/local/lib/python3.10/dist-packages (from pandas->vega_datasets) (1.26.4)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas->vega_datasets) (2.8.2)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas->vega_datasets) (2024.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas->vega_datasets) (2024.2)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil>=2.8.2->pandas->vega_datasets) (1.16.0)
+
+Data Ingest from Public Markets
+
+The free, common Yahoo Finace API is used to download data from all commodites you wish to see studied. This data will be stored persistently next to your notebook in common environments such as Binder.
+
+Please note that if you deploy this notebook in Google Collab that the 37+ files downloaded will be erased between uses, but can be rebuilt easily each time you operate this notebook.
+
+The data you download becomes permanently usable, and the ingest request below can be customized in order to grab more, or less data and at different intervals.[2]
+
+I have included several exceptions to the download and renaming technique, in order to tolerate commodities with differing ticker symbols.
+
+#FOR COMMODITIES, NOT STOCKS
+# import yfinance as yf
+# from time import time,ctime, clock_gettime
+# from time import gmtime, time, time_ns
+
+# def ifs(input):
+#     ni = ''
+#     if input =='gff':
+#         input = 'GFF'
+#         ni = "GF=F"
+#     elif input == 'zff':
+#         input = 'ZFF'
+#         ni = "ZF=F"
+#     else:
+#         input = input.upper()
+#         ins = "="
+#         before = "F"
+#         ni = input.replace(before, ins + before , 1)
+#     print(ni)
+#     data = yf.download(
+#         tickers = ni,
+#         period = "2y",
+#         interval = "1d",
+#         group_by = 'ticker',
+#         auto_adjust = True,
+#         prepost = True,
+#         threads = True,
+#         proxy = None
+#     )
+#     epoch = ctime()
+#     filename = input
+#     data.to_csv(filename)
+# #!ls #only in jupy
+
+# # FOR EQUITIES
+
+import yfinance as yf
+from time import time,ctime, clock_gettime
+from time import gmtime, time, time_ns
+
+def ifs(input):
+    data = yf.download(
+        tickers = input,
+        period = "2y",
+        interval = "1d",
+        # group_by = 'ticker',
+        auto_adjust = True,
+        prepost = True,
+        threads = True,
+        proxy = None
+    )
+    epoch = ctime()
+    filename = input
+    data.to_csv(filename)
+#!ls #only in jupy
+
+Trigger Data Downloads
+
+The following code customizes the commodities under investigation. In order to compare every commodity's price history versus the rest in your matrix, the lengths of the data captures are minimized to the length of the smallest data set. Thus, larger sets are only captured at the length of the smallest set.
+
+The volatility of every price tick is calculated via [close price minus open price].
+
+#PLACE YOUR SYMBOL DICTIONARY HERE PLEASE
+symbol_dict = {
+    "RTX": "Raytheon",
+    "NOC": "Northrop Grumman",
+    "PLTR": "Palantir",
+    "NVDA": "Nvidia",
+    "TSLA": "Tesla",
+    "VZ": "Verizon",
+    "GOOG": "Alphabet",
+    "IBM": "IBM"
+}
+
+symbol_dict = {
+    "AMT" : "American Tower Corporation",
+    "CCI" : "Crown Castle Inc.",
+    "PLD" : "Prologis INC.",
+    "PSA ": "Public Storage",
+    "SQ" : "Square Inc.",
+    "PYPL" : "PayPal Holdings Inc.",
+    "INTU" : "Intuit Inc.",
+    "SOFI" : "SoFi Technologies, Inc."
+
+}
+
+money_service_businesses = {
+    "V": "Visa Inc.",
+    "MA": "Mastercard Incorporated",
+    "PYPL": "PayPal Holdings, Inc.",
+    "SQ": "Block, Inc. (formerly Square, Inc.)",
+    "WU": "The Western Union Company",
+    "DOVA": "Dova Pharmaceuticals, Inc.",
+    "FTNT": "Fortinet, Inc.",
+    "GPN": "Global Payments Inc.",
+    "ADBE": "Adobe Inc. (offers payment solutions)",
+    "AXP": "American Express Company"
+}
+
+# symbol_dict = {"clf":"crude oil", "esf":"E-Mini S&P 500","btcf":"Bitcoin","bzf":"Brent Crude Oil", "ccf":"Cocoa","ctf":"Cotton","gcf":"Gold",
+#            "gff":"Feeder Cattle", "hef":"Lean Hogs","hgf":"Copper","hof":"Heating Oil","kcf":"Coffee","kef":"KC HRW Wheat",
+#            "lbsf":"Lumber","lef":"Live Cattle","mgcf":"Micro Gold","ngf":"Natural Gas","nqf":"Nasdaq 100","ojf":"Orange Juice","paf":"Palladium","plf":"Chicago Ethanol (Platts)",
+#             "rbf":"RBOB Gasoline","rtyf":"E-mini Russell 2000","sbf":"Sugar #11","sif":"Silver","silf":"Micro Silver","ymf":"Mini Dow Jones Indus","zbf":"U.S. Treasury Bond Futures",
+#             "zcf":"Corn","zff":"Five-Year US Treasury Note","zlf":"Soybean Oil Futures","zmf":"Soybean Meal","znf":"10-Year T-Note","zof":"Oat Futures","zrf":"Rough Rice",
+#             "zsf":"Soybean","ztf":"2-Year T-Note"} #QQ, SPY , TNX, VIX
+
+data getter:
+
+#read in csv data from each commodity capture, gather
+#assign 'open' to an array, create df from arrays
+import numpy as np
+import pandas as pd
+from  scipy.stats import pearsonr
+
+
+sym, names = np.array(sorted(symbol_dict.items())).T
+
+for i in sym:    #build all symbol csvs, will populate/appear in your binder. Use linux for efficient dp
+    ifs(i)
+
+quotes = []
+lens = []
+for symbol in sym:
+    symbol = f"{symbol}"  #symbol.upper()
+    t = pd.read_csv(symbol)
+    lens.append(t.shape[0])
+mm = np.amin(lens)-1
+print("min length of data: ",mm)
+
+for symbol in sym:
+    symbol = f"{symbol}"   #symbol.upper()
+    t = pd.read_csv(symbol)
+    t= t.truncate(after=mm)
+    t = t.iloc[2:]  # Delete the first two rows
+    print(t)
+    quotes.append(t)
+
+
+print(f"length of quotes list: {quotes}")
+mi = np.vstack([q["Close"].astype(float) for q in quotes]) #min
+ma = np.vstack([q["Open"].astype(float) for q in quotes]) #max
+
+volatility = ma - mi
+
+Data Format
+
+After downloading this massive store of data, you should click on a file, in your project. Using the file browser, you will see a large quantity of new files.
+
+When you open one, you will see the rows of new data.
+
+Cross Validate for Optimal Parameters: the Lasso
+
+Varoquaux's pipeline involves steps in the following two cells.
+
+A set of clusters is built using a set of predefined edges, called the edge model. The volatility of every OHLC tick is fed into the edge model, in order to establish every commodity's covariance to eachother.
+
+The advantages of the Graphical Lasso model is that a cross validated average set of hyperparameters is located, then applied to cluster each commodity. Thus, every commodity is identified with other commodities which move in tandem, together, over seven days. I print the alpha edges below, and visualize this group.
+
+Depending upon the markets when you run this study, more intensive clustering may take place at either end of the spectrum. This exposes the covariance between different groups, while exposing outlier clusters.
+
+Using the Interactive Graph
+
+Feel free to move your mouse into the graph, then roll your mouse. This will drill in/out and allow you to hover over data points. They will mape to the edges of the clusters, under investigation.
+
+from sklearn import covariance
+import altair as alt
+alphas = np.logspace(-1.5, 1, num=15)
+edge_model = covariance.GraphicalLassoCV(alphas=alphas)
+X = volatility.copy().T
+X /= X.std(axis=0)
+l =edge_model.fit(X)
+n= []
+print(type(l.alphas))
+for  i in range(len(l.alphas)):
+    print(l.alphas[i])
+    dict = {"idx":i , "alpha":l.alphas[i]}
+    n.append(dict)
+
+dd = pd.DataFrame(n)
+alt.Chart(dd).mark_point(filled=True, size=100).encode(
+    y=alt.Y('idx'),
+    x=alt.X('alpha'),tooltip=['alpha'],).properties(
+        width=800,
+        height=400,
+        title="Edges Present Within the Graphical Lasso Model"
+    ).interactive()
+
+Definining cluster Membership, by Covariant Affinity
+
+Clusters of covariant, affine moving commodities are established. This group is then passed into a dataframe so that the buckets of symbols can become visible.
+
+from sklearn import cluster
+                                                    #each symbol, at index, is labeled with a cluster id:
+_, labels = cluster.affinity_propagation(edge_model.covariance_, random_state=0)
+n_labels = labels.max()                             #integer limit to list of clusters ids
+# print("names: ",names,"  symbols: ",sym)
+gdf = pd.DataFrame()
+data = []
+for i in range(n_labels + 1):
+    print(f"Cluster {i + 1}: {', '.join(np.array(sym)[labels == i])}")
+    l = np.array(sym)[labels == i]
+    ss = np.array(names)[labels == i]
+    dict = {"cluster":(i+1), "symbols":l, "size":len(l), "names":ss}
+    # gdf = gdf.append(dict, ignore_index=True, sort=True)
+
+    data.append({"cluster": (i + 1), "symbols": l, "size": len(l), "names": ss})
+gdf = pd.DataFrame(data)
+gdf.head(15)
+
+Visualizing cluster and affine commodities, by volatility
+
+The interactive graphic requires the user to hover over each dot, in teh scatter chart. The size of the commodity cluster pushes it to the top, where the user can study the members, whose prices move in covariant fashion.
+
+I have experimented with laying the text of the commodity group over the dots, but I find that the above table is most helpful, in identifying markets which move in tandem, and with similar price graphs. Also, as groups expand and contract, overlaying text on the chart below may prevent certain clusters from appearing. I appreciate spacing them out, and not congesting the chart.
+
+The user is free to study where his or her chosen commodity may sit, in close relation to other globally relevant commodities.
+
+for i in gdf['cluster']:
+    print("cluster ",i)
+    d = gdf[gdf['cluster'].eq(i)]
+    for j in d.names:
+        print(j, ", ")
+
+import altair as alt
+def runCluster():
+    c = alt.Chart(gdf).mark_circle(size=60).encode(
+        x= alt.X('cluster:N'),
+        y= alt.Y('size:Q'),
+        color='size:Q',
+        tooltip=['names'],
+        size=alt.Size('size:Q')
+    ).properties(
+        width=800,
+        height=400,
+        title="40 Top Global Commodities, Clustered by Affine Covariance"
+    ).interactive()
+    #.configure_title("40 Top Global Commodities, Clustered by Affine Covariance")
+
+    chart =c
+    return chart
+runCluster()
+
+Double-click (or enter) to edit
+
+References
+
+    Gael Varoquaux. Visualizing the Stock Market Structure. Scikit-Learn documentation pages, https://scikit-learn.org/stable/auto_examples/applications/plot_stock_market.html
+    Ran Aroussi. YFinance API documents. https://github.com/ranaroussi/yfinance
+    The Altair Charting Toolkit. https://altair-viz.github.io/index.html
+
+!pip install plotly
+
+Requirement already satisfied: plotly in /usr/local/lib/python3.10/dist-packages (5.24.1)
+Requirement already satisfied: tenacity>=6.2.0 in /usr/local/lib/python3.10/dist-packages (from plotly) (9.0.0)
+Requirement already satisfied: packaging in /usr/local/lib/python3.10/dist-packages (from plotly) (24.2)
+
+import plotly.graph_objects as go
+import pandas as pd
+from datetime import datetime
+
+df_symbol = pd.read_csv('CCF')    #no .csv
+
+df_symbol.columns
+
+df_symbol.head(2)
+
+fig = go.Figure(data=[go.Candlestick(x=df_symbol['Date'],
+                open=df_symbol['Open'],
+                high=df_symbol['High'],
+                low=df_symbol['Low'],
+                close=df_symbol['Close'])])
+fig.show()
+
+# Using plotly.express
+import plotly.express as px
+
+df2 = px.data.stocks()
+fig = px.line(df2, x='date', y="AAPL")
+fig.show()
+
+df2.columns
+
+df2.head(2)
+
+
+df2['AMZN']
+
+df_symbol.columns
+
+df_symbol['Close']
+
+# Using plotly.express
+import plotly.express as px
+fig = px.line(df_symbol, x='Date', y="Close") #contains BTCF daily price series
+fig.show()
+
+Plotting the Clustered Commodities
+
+#generate a Date column in gdf
+def getDateColumn():
+  df = pd.read_csv('BTCF')  #CHOOSE an equity or vehicle for which you possess a Date index
+  return df['Date']  #pandas series
+
+symUpper = [x.upper() for x in sym] #make all symbols in sym to uppercase
+# print(symUpper)
+gdf = pd.DataFrame(columns=symUpper) #form a new global dataframe, gdf, for purpose of graphing
+# gdf['Date'] = getDateColumn()            #get a common index for dates, for every commodity or equity
+for i in range(len(symUpper)):           #iterate the length of the uppercase symbols
+  df_x = pd.read_csv( symUpper[i])       #create one dataframe to hold the csv contents
+  gdf[symUpper[i]] = df_x['Close']       #extract the price series from the 'Closed' column
+print(gdf.head(3))                       #print the resulting top three rows from the new gdf
+# print(gdf.columns)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+# scale the data
+scaler = StandardScaler()
+scaled_gdf = pd.DataFrame(scaler.fit_transform(gdf), columns=gdf.columns)
+
+# plot the dataframe
+fig, ax = plt.subplots(figsize=(16, 8))
+scaled_gdf.plot.line(ax=ax)
+
+# add title and subtitle
+ax.set_title('Covariant Equities and Commodities', fontsize=14)
+ax.text(0.5, 1.05, 'A Multiline Chart Illustrating Cluster Members, by Covariance',
+        horizontalalignment='center',
+        fontsize=11,
+        transform=ax.transAxes)
+# show the plot
+plt.show()
+
+Colab paid products - Cancel contracts here
